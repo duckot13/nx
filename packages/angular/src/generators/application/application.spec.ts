@@ -741,12 +741,12 @@ describe('app', () => {
         ]);
       });
 
-      it('should set parserOptions.project when enabled (flat config)', async () => {
+      it('should enable typed linting via projectService (flat config)', async () => {
         appTree.write('eslint.config.cjs', '');
 
         await generateApp(appTree, 'my-app', {
           linter: 'eslint',
-          setParserOptionsProject: true,
+          enableTypedLinting: true,
         });
 
         const eslintConfig = appTree.read('my-app/eslint.config.cjs', 'utf-8');
@@ -767,9 +767,8 @@ describe('app', () => {
                   ],
                   languageOptions: {
                       parserOptions: {
-                          project: [
-                              "my-app/tsconfig.*?.json"
-                          ]
+                          projectService: true,
+                          tsconfigRootDir: __dirname
                       }
                   }
               },
@@ -806,6 +805,19 @@ describe('app', () => {
           ];
           "
         `);
+      });
+
+      it('should treat the deprecated setParserOptionsProject as enableTypedLinting (flat config)', async () => {
+        appTree.write('eslint.config.cjs', '');
+
+        await generateApp(appTree, 'my-app', {
+          linter: 'eslint',
+          setParserOptionsProject: true,
+        });
+
+        const eslintConfig = appTree.read('my-app/eslint.config.cjs', 'utf-8');
+        expect(eslintConfig).toContain('projectService: true');
+        expect(eslintConfig).toContain('tsconfigRootDir: __dirname');
       });
     });
 
