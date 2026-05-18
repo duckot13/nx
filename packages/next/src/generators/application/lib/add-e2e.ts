@@ -84,10 +84,7 @@ export async function addE2e(
       devServerTarget: e2eWebServerInfo.e2eDevServerTarget,
       baseUrl: e2eWebServerInfo.e2eWebServerAddress,
       jsx: true,
-      // Cross-plugin: map new flag to `setParserOptionsProject` for the
-      // published @nx/cypress.
-      setParserOptionsProject: isTypedLintingEnabled(options),
-      enableTypedLinting: undefined,
+      enableTypedLinting: isTypedLintingEnabled(options),
       webServerCommands: {
         default: e2eWebServerInfo.e2eWebServerCommand,
       },
@@ -138,9 +135,7 @@ export async function addE2e(
       directory: 'src',
       js: false,
       linter: options.linter,
-      // Cross-plugin: map new flag to `setParserOptionsProject` for the
-      // published @nx/playwright.
-      setParserOptionsProject: isTypedLintingEnabled(options),
+      enableTypedLinting: isTypedLintingEnabled(options),
       webServerAddress: e2eWebServerInfo.e2eCiBaseUrl,
       webServerCommand: e2eWebServerInfo.e2eWebServerCommand,
       addPlugin: options.addPlugin,
