@@ -8,6 +8,7 @@ import {
   Tree,
   writeJson,
 } from '@nx/devkit';
+import { isTypedLintingEnabled } from '@nx/eslint/src/generators/utils/eslint-file';
 import type { PackageJson } from 'nx/src/utils/package-json';
 import { hasExpoPlugin } from '../../../utils/has-expo-plugin';
 import { nxVersion } from '../../../utils/versions';
@@ -133,11 +134,11 @@ export async function addE2e(
         directory: 'src',
         js: false,
         linter: options.linter,
-        // Cross-plugin: forward as `setParserOptionsProject` so the published
-        // @nx/playwright accepts the option (`enableTypedLinting` is not in its
-        // types yet).
-        setParserOptionsProject:
-          options.enableTypedLinting || options.setParserOptionsProject,
+        // Cross-plugin: `ensurePackage` resolves to the installed @nx/playwright,
+        // whose published types may not have `enableTypedLinting` yet. Forward
+        // the normalized flag as `setParserOptionsProject` instead so both
+        // releases honor the user's intent.
+        setParserOptionsProject: isTypedLintingEnabled(options),
         webServerCommand: e2eWebServerInfo.e2eCiWebServerCommand,
         webServerAddress: e2eWebServerInfo.e2eCiBaseUrl,
         rootProject: options.rootProject,
@@ -158,8 +159,9 @@ export async function addE2e(
         appDisplayName: options.displayName,
         appName: options.simpleName,
         framework: 'expo',
-        enableTypedLinting: options.enableTypedLinting,
-        setParserOptionsProject: options.setParserOptionsProject,
+        // Cross-plugin: see comment in the playwright branch above.
+        setParserOptionsProject: isTypedLintingEnabled(options),
+        enableTypedLinting: undefined,
         skipFormat: true,
       });
     case 'none':

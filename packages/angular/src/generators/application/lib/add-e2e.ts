@@ -1,5 +1,6 @@
 import { Tree } from '@nx/devkit';
 import { E2EWebServerDetails } from '@nx/devkit/internal';
+import { isTypedLintingEnabled } from '@nx/eslint/src/generators/utils/eslint-file';
 import {
   addProjectConfiguration,
   ensurePackage,
@@ -74,8 +75,7 @@ export async function addE2e(tree: Tree, options: NormalizedSchema) {
       // The cross-plugin call resolves to the published @nx/playwright types,
       // which don't yet know about `enableTypedLinting`. Forward as
       // `setParserOptionsProject` — both flags map to the same behavior.
-      setParserOptionsProject:
-        options.enableTypedLinting || options.setParserOptionsProject,
+      setParserOptionsProject: isTypedLintingEnabled(options),
       webServerCommand: e2eWebServerInfo.e2eWebServerCommand,
       webServerAddress: e2eWebServerInfo.e2eWebServerAddress,
       rootProject: options.rootProject,

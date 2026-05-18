@@ -1,4 +1,5 @@
 import { getE2EWebServerInfo } from '@nx/devkit/internal';
+import { isTypedLintingEnabled } from '@nx/eslint/src/generators/utils/eslint-file';
 import {
   addProjectConfiguration,
   ensurePackage,
@@ -119,8 +120,7 @@ export async function addE2e(
       // Cross-plugin: forward as `setParserOptionsProject` so the published
       // @nx/playwright accepts the option (`enableTypedLinting` is not in its
       // types yet).
-      setParserOptionsProject:
-        options.enableTypedLinting || options.setParserOptionsProject,
+      setParserOptionsProject: isTypedLintingEnabled(options),
       webServerAddress: e2eWebServerInfo.e2eCiBaseUrl,
       webServerCommand: e2eWebServerInfo.e2eCiWebServerCommand,
       addPlugin: true,
