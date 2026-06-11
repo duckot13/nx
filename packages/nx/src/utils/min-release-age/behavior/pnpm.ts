@@ -11,7 +11,11 @@ import {
 } from 'semver';
 import { MS_PER_DAY, MS_PER_MINUTE } from '../constants';
 import { MinReleaseAgeViolationError } from '../errors';
-import { readNpmrcEntries } from '../npmrc';
+import {
+  getPnpmConfigDir,
+  readPnpmYamlConfig,
+} from '../../package-manager-config/pnpm-config';
+import { readNpmrcEntries } from '../../package-manager-config/npmrc';
 import type { RegistryMetadata } from '../packument';
 import {
   blockedVersionsFrom,
@@ -284,7 +288,7 @@ function readV11Surfaces(
       ignoreMissingTime: undefined,
     };
   }
-  const globalRead = readYamlWindow(join(getConfigDir(env), 'config.yaml'));
+  const globalRead = readYamlWindow(join(getPnpmConfigDir(env), 'config.yaml'));
   if (globalRead && globalRead.kind === 'invalid') {
     return {
       window: globalRead,
@@ -416,23 +420,8 @@ interface YamlWindow {
   ignoreMissingTime?: boolean;
 }
 
-function readYamlRaw(path: string): Record<string, unknown> | 'invalid' | null {
-  if (!existsSync(path)) {
-    return null;
-  }
-  try {
-    const { load } = require('@zkochan/js-yaml');
-    return (load(readFileSync(path, 'utf-8')) as Record<string, unknown>) ?? {};
-  } catch {
-    // The file exists but is unparseable. An absent file falls through to lower
-    // surfaces; a corrupt one can't be reasoned about, so signal it and let the
-    // caller defer to a real install (matching npm/yarn/bun on a read failure).
-    return 'invalid';
-  }
-}
-
 function readYamlWindow(path: string): YamlWindow | InvalidWindow | null {
-  const doc = readYamlRaw(path);
+  const doc = readPnpmYamlConfig(path);
   if (doc === 'invalid') {
     return { kind: 'invalid', reason: `Unable to parse ${basename(path)}.` };
   }
@@ -477,8 +466,9 @@ function readNpmrcSurface(
   // honored. Only the two cooldown keys are relevant here.
   let windowMinutes: number | undefined;
   let excludes: string[] | undefined;
-  for (const { key, value: rawValue } of entries) {
-    const value = stripQuotes(rawValue);
+  // readNpmrcEntries already applies ini's unsafe() (unquote + inline-comment
+  // strip), so the value is consumed as-is.
+  for (const { key, value } of entries) {
     if (key === 'minimum-release-age') {
       const num = toNumber(value);
       if (num !== null) {
@@ -490,23 +480,6 @@ function readNpmrcSurface(
     }
   }
   return { windowMinutes, excludes };
-}
-
-// pnpm mirrors getConfigDir: XDG_CONFIG_HOME, else per-platform default.
-function getConfigDir(env: NodeJS.ProcessEnv): string {
-  if (env.XDG_CONFIG_HOME) {
-    return join(env.XDG_CONFIG_HOME, 'pnpm');
-  }
-  if (process.platform === 'darwin') {
-    return join(homedir(), 'Library/Preferences/pnpm');
-  }
-  if (process.platform !== 'win32') {
-    return join(homedir(), '.config/pnpm');
-  }
-  if (env.LOCALAPPDATA) {
-    return join(env.LOCALAPPDATA, 'pnpm/config');
-  }
-  return join(homedir(), '.config/pnpm');
 }
 
 // --- env helpers ------------------------------------------------------------
@@ -621,16 +594,6 @@ function toNumber(value: unknown): number | null {
     return Number.isFinite(num) ? num : null;
   }
   return null;
-}
-
-function stripQuotes(value: string): string {
-  if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  ) {
-    return value.slice(1, -1);
-  }
-  return value;
 }
 
 function readArrayKey(
