@@ -185,6 +185,7 @@
       "inputs": ["e2eInputs", "^production"],
       "dependsOn": [
         "@nx/nx-source:populate-local-registry-storage",
+        "@nx/nx-source:populate-e2e-base-workspace",
         "@nx/nx-source:local-registry"
       ]
     },
@@ -198,6 +199,7 @@
       "inputs": ["e2eInputs", "^production"],
       "dependsOn": [
         "@nx/nx-source:populate-local-registry-storage",
+        "@nx/nx-source:populate-e2e-base-workspace",
         "@nx/nx-source:local-registry"
       ]
     },
@@ -210,6 +212,7 @@
       "inputs": ["e2eInputs", "^production"],
       "dependsOn": [
         "@nx/nx-source:populate-local-registry-storage",
+        "@nx/nx-source:populate-e2e-base-workspace",
         "@nx/nx-source:local-registry"
       ],
       "options": {
@@ -221,6 +224,7 @@
       "inputs": ["e2eInputs", "^production"],
       "dependsOn": [
         "@nx/nx-source:populate-local-registry-storage",
+        "@nx/nx-source:populate-e2e-base-workspace",
         "@nx/nx-source:local-registry"
       ]
     },
