@@ -72,7 +72,7 @@ export function WebinarNotifier({
         damping: 30,
         mass: 1,
       }}
-      className={`fixed right-0 bottom-0 left-0 z-30 w-full overflow-hidden border border-zinc-200 bg-white text-zinc-900 shadow-lg md:right-4 md:bottom-4 md:left-auto md:w-[512px] md:rounded-lg dark:border-transparent dark:bg-zinc-950 dark:text-white ${
+      className={`fixed bottom-0 left-0 right-0 z-30 w-full overflow-hidden border border-zinc-200 bg-white text-zinc-900 shadow-lg md:bottom-4 md:left-auto md:right-4 md:w-[512px] md:rounded-lg dark:border-transparent dark:bg-zinc-950 dark:text-white ${
         artwork ? 'md:overflow-visible' : ''
       }`}
       style={{ originY: 1 }}
@@ -83,7 +83,7 @@ export function WebinarNotifier({
             src={artwork}
             alt=""
             aria-hidden="true"
-            className="pointer-events-none absolute -top-7 -right-4 z-0 hidden w-[420px] select-none md:block"
+            className="pointer-events-none absolute -right-4 -top-7 z-0 hidden w-[420px] select-none md:block"
           />
           {/* Text-protection scrim: keeps title/description legible over any artwork. */}
           <div
@@ -95,7 +95,7 @@ export function WebinarNotifier({
       <div className="relative z-[2] p-4">
         <button
           onClick={closeNotifier}
-          className="absolute top-2 right-2 flex h-9 w-9 cursor-pointer items-center justify-center !rounded-full bg-transparent p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus:ring-2 focus:ring-zinc-400 focus:outline-none dark:text-white dark:hover:bg-zinc-800 dark:hover:text-white dark:focus:ring-white"
+          className="absolute right-2 top-2 flex h-9 w-9 cursor-pointer items-center justify-center !rounded-full bg-transparent p-1 text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:text-white dark:hover:bg-zinc-800 dark:hover:text-white dark:focus:ring-white"
         >
           <XMarkIcon className="size-5" aria-hidden="true" />
           <span className="sr-only">Close</span>
