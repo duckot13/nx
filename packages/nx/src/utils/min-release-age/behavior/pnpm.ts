@@ -1,4 +1,3 @@
-import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import { basename, join } from 'path';
 import {
