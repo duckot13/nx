@@ -78,7 +78,8 @@ export async function createWorkspace<T extends CreateWorkspaceOptions>(
     options.template = resolveTemplateShorthand(options.template);
 
     if (!options.template.startsWith('nrwl/'))
-      throw new Error(
+      throw new CnwError(
+        'INVALID_TEMPLATE',
         `Invalid template. Only templates from the 'nrwl' GitHub org are supported.`
       );
     const templateUrl = `https://github.com/${options.template}`;
@@ -160,7 +161,8 @@ export async function createWorkspace<T extends CreateWorkspaceOptions>(
   } else {
     // Preset flow - existing behavior
     if (!preset) {
-      throw new Error(
+      throw new CnwError(
+        'MISSING_PRESET',
         'Preset is required when not using a template. Please provide --preset or --template.'
       );
     }

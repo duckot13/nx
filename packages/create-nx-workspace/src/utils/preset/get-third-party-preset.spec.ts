@@ -1,8 +1,19 @@
 import { getPackageNameFromThirdPartyPreset } from './get-third-party-preset';
+import { CnwError } from '../error-utils';
 
 describe('getPackageNameFromThirdPartyPreset', () => {
   it('should throw an error if preset is invalid', () => {
     expect(() => getPackageNameFromThirdPartyPreset('_random')).toThrow();
+  });
+
+  it('should throw a CnwError with INVALID_PRESET code for an invalid package name', () => {
+    try {
+      getPackageNameFromThirdPartyPreset('_random');
+      fail('Expected CnwError to be thrown');
+    } catch (e) {
+      expect(e).toBeInstanceOf(CnwError);
+      expect((e as CnwError).code).toBe('INVALID_PRESET');
+    }
   });
 
   it('should return undefined if preset is known nx preset', () => {

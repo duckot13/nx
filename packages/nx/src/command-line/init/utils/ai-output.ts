@@ -49,6 +49,7 @@ export type NxInitErrorCode =
   | 'UNCOMMITTED_CHANGES'
   | 'UNSUPPORTED_PROJECT'
   | 'PLUGIN_INIT_ERROR'
+  | 'DOT_NX_SETUP_ERROR'
   | 'NETWORK_ERROR'
   | 'UNKNOWN';
 
@@ -229,6 +230,12 @@ export function getErrorHints(errorCode: NxInitErrorCode): string[] {
         'Check the error log for details',
         "Try running 'nx add <plugin>' manually",
       ];
+    case 'DOT_NX_SETUP_ERROR':
+      return [
+        'The .nx wrapper could not be verified',
+        'Ensure Node.js and npm are installed and on your PATH',
+        'On Windows, run from a shell where the nx.bat wrapper can execute',
+      ];
     case 'NETWORK_ERROR':
       return [
         'Check your internet connection',
@@ -256,6 +263,26 @@ export function determineErrorCode(error: Error | unknown): NxInitErrorCode {
     lowerMessage.includes('already initialized')
   ) {
     return 'ALREADY_INITIALIZED';
+  }
+
+  // Check these specific signals before the broad package-manager net below:
+  // a dot-nx failure's piped stderr can mention npm and would otherwise be
+  // mis-bucketed as PACKAGE_INSTALL_ERROR.
+
+  // Legacy Angular migration can't resolve @angular/core (see legacy-angular-versions.ts).
+  if (
+    lowerMessage.includes('could not determine the existing angular version')
+  ) {
+    return 'UNSUPPORTED_PROJECT';
+  }
+
+  // dot-nx wrapper verification failed. Anchor on the command shape so an
+  // unrelated message that merely mentions "nx --version" is not mis-bucketed.
+  if (
+    lowerMessage.includes('./nx --version') ||
+    lowerMessage.includes('nx.bat --version')
+  ) {
+    return 'DOT_NX_SETUP_ERROR';
   }
 
   if (

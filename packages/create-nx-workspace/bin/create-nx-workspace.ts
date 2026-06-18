@@ -488,7 +488,11 @@ async function handleError(error: unknown): Promise<void> {
     const errorCode = error instanceof CnwError ? error.code : 'UNKNOWN';
     const errorMessage = error instanceof Error ? error.message : String(error);
     const errorLogPath = error instanceof CnwError ? error.logFile : undefined;
-    writeAiOutput(buildErrorResult(errorMessage, errorCode, errorLogPath));
+    const suggestedName =
+      error instanceof CnwError ? error.suggestedName : undefined;
+    writeAiOutput(
+      buildErrorResult(errorMessage, errorCode, errorLogPath, suggestedName)
+    );
   } else {
     let bodyLines: string[];
     if (error instanceof CnwError) {
@@ -846,6 +850,23 @@ function isCurrentDirReference(folderName: string): boolean {
   return folderName === '.' || folderName === './';
 }
 
+// Append a counter (acme -> acme-2) until a free name is found, so AI agents
+// get a concrete name to retry instead of looping. The passed name is kept
+// whole (angular-17 -> angular-17-2) so its meaning is preserved.
+export function suggestAvailableName(
+  baseName: string,
+  workingDir: string = process.cwd()
+): string {
+  let counter = 1;
+  let candidate = baseName;
+  // Bounded by the number of sibling directories; always returns a free name.
+  while (existsSync(join(workingDir, candidate))) {
+    counter++;
+    candidate = `${baseName}-${counter}`;
+  }
+  return candidate;
+}
+
 /**
  * Resolves special folder name patterns (`.`, `./`, absolute paths) into a
  * workspace name and a `workingDir` override so that downstream functions
@@ -931,10 +952,15 @@ export async function determineFolder(
         // Re-prompt for a new folder name
         return promptForFolder(parsedArgs);
       }
-      throw new CnwError(
+      const error = new CnwError(
         'DIRECTORY_EXISTS',
         `The directory '${folderName}' already exists. Choose a different name or remove the existing directory.`
       );
+      error.suggestedName = suggestAvailableName(
+        folderName,
+        resolved?.workingDir
+      );
+      throw error;
     }
     return folderName;
   }

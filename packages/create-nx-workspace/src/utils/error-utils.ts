@@ -10,6 +10,8 @@ export type CnwErrorCode =
   | 'INVALID_PACKAGE_MANAGER'
   | 'INVALID_PATH'
   | 'INVALID_PRESET'
+  | 'INVALID_TEMPLATE'
+  | 'MISSING_PRESET'
   | 'INVALID_WORKSPACE_TYPE'
   | 'INVALID_APP_NAME'
   | 'PRESET_FAILED'
@@ -28,6 +30,9 @@ export type CnwErrorCode =
  * Used for structured error reporting and telemetry.
  */
 export class CnwError extends Error {
+  // Retry name; set only for DIRECTORY_EXISTS so AI agents stop looping.
+  suggestedName?: string;
+
   constructor(
     public readonly code: CnwErrorCode,
     message: string,

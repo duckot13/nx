@@ -128,6 +128,8 @@ export interface ErrorResult {
   errorCode: CnwErrorCode | 'UNKNOWN';
   hints: string[];
   errorLogPath?: string;
+  /** An available name to retry with (DIRECTORY_EXISTS only). */
+  suggestedName?: string;
   docsGettingStarted: string;
 }
 
@@ -310,9 +312,16 @@ export function buildSuccessResult(options: {
 export function buildErrorResult(
   error: string,
   errorCode: CnwErrorCode | 'UNKNOWN',
-  errorLogPath?: string
+  errorLogPath?: string,
+  suggestedName?: string
 ): ErrorResult {
   const hints = getErrorHints(errorCode);
+
+  // Surface the retry name as a structured field (below) and a prose hint;
+  // both come from suggestedName here, so they cannot drift.
+  if (suggestedName) {
+    hints.unshift(`Re-run with an available name, e.g. '${suggestedName}'`);
+  }
 
   return {
     stage: 'error',
@@ -322,6 +331,7 @@ export function buildErrorResult(
     errorCode,
     hints,
     errorLogPath,
+    suggestedName,
     docsGettingStarted: 'https://nx.dev/getting-started/intro',
   };
 }
@@ -346,6 +356,18 @@ function getErrorHints(errorCode: CnwErrorCode | 'UNKNOWN'): string[] {
         'Check the preset name spelling',
         'Run with --help to see available presets',
         'Use --template for template-based workspaces',
+      ];
+    case 'MISSING_PRESET':
+      return [
+        'Provide a preset with --preset',
+        'Or create from a template with --template',
+        'Run with --help to see available presets',
+      ];
+    case 'INVALID_TEMPLATE':
+      return [
+        "Only templates from the 'nrwl' GitHub org are supported",
+        'Pass a template as nrwl/<repo>',
+        'Or use --preset for a standard workspace',
       ];
     case 'NETWORK_ERROR':
       return [

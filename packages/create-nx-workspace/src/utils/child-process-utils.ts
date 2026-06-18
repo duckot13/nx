@@ -69,7 +69,15 @@ export function execAndWait(
       command,
       {
         cwd,
-        env: { ...process.env, NX_DAEMON: 'false' },
+        // Every execAndWait child runs non-interactively (no TTY). Forcing CI
+        // when it is unset or empty stops pnpm aborting on a node_modules purge
+        // (ERR_PNPM_ABORTED_REMOVE_MODULES_DIR_NO_TTY) and keeps other tools
+        // non-interactive too; benign for a CNW run. A set CI value is kept.
+        env: {
+          ...process.env,
+          NX_DAEMON: 'false',
+          CI: process.env.CI || 'true',
+        },
         windowsHide: true,
         maxBuffer: 1024 * 1024 * 10, // 10MB — default 1MB can be exceeded by verbose PM output
         ...(timeout ? { timeout } : {}),

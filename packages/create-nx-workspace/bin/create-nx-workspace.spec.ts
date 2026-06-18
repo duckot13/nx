@@ -2,6 +2,7 @@ import {
   validateWorkspaceName,
   resolveSpecialFolderName,
   determineFolder,
+  suggestAvailableName,
 } from './create-nx-workspace';
 import { CnwError } from '../src/utils/error-utils';
 import { mkdtempSync, mkdirSync, rmSync, realpathSync } from 'fs';
@@ -143,6 +144,67 @@ describe('determineFolder', () => {
 
     await expect(determineFolder(parsedArgs)).rejects.toThrow(CnwError);
     await expect(determineFolder(parsedArgs)).rejects.toThrow(/already exists/);
+
+    rmSync(tmpDir, { recursive: true });
+  });
+
+  it('should attach an available suggestedName to the DIRECTORY_EXISTS error', async () => {
+    const tmpDir = realpathSync(mkdtempSync(join(tmpdir(), 'cnw-test-')));
+    mkdirSync(join(tmpDir, 'existing'));
+    process.chdir(tmpDir);
+
+    const parsedArgs = makeParsedArgs({
+      positional: 'existing',
+      interactive: false,
+    });
+
+    try {
+      await determineFolder(parsedArgs);
+      fail('Expected CnwError to be thrown');
+    } catch (e) {
+      expect(e).toBeInstanceOf(CnwError);
+      expect((e as CnwError).code).toBe('DIRECTORY_EXISTS');
+      expect((e as CnwError).suggestedName).toBe('existing-2');
+    }
+
+    rmSync(tmpDir, { recursive: true });
+  });
+});
+
+describe('suggestAvailableName', () => {
+  it('should return the base name when no directory exists', () => {
+    const tmpDir = realpathSync(mkdtempSync(join(tmpdir(), 'cnw-test-')));
+
+    expect(suggestAvailableName('acme', tmpDir)).toBe('acme');
+
+    rmSync(tmpDir, { recursive: true });
+  });
+
+  it('should append -2 when the base directory exists', () => {
+    const tmpDir = realpathSync(mkdtempSync(join(tmpdir(), 'cnw-test-')));
+    mkdirSync(join(tmpDir, 'acme'));
+
+    expect(suggestAvailableName('acme', tmpDir)).toBe('acme-2');
+
+    rmSync(tmpDir, { recursive: true });
+  });
+
+  it('should skip taken suffixes until a free one is found', () => {
+    const tmpDir = realpathSync(mkdtempSync(join(tmpdir(), 'cnw-test-')));
+    mkdirSync(join(tmpDir, 'acme'));
+    mkdirSync(join(tmpDir, 'acme-2'));
+
+    expect(suggestAvailableName('acme', tmpDir)).toBe('acme-3');
+
+    rmSync(tmpDir, { recursive: true });
+  });
+
+  it('should keep a meaningful trailing number and append a counter', () => {
+    const tmpDir = realpathSync(mkdtempSync(join(tmpdir(), 'cnw-test-')));
+    mkdirSync(join(tmpDir, 'angular-17'));
+
+    // The passed name is preserved whole, not stripped to 'angular'.
+    expect(suggestAvailableName('angular-17', tmpDir)).toBe('angular-17-2');
 
     rmSync(tmpDir, { recursive: true });
   });

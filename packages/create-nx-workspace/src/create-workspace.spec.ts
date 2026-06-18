@@ -1,7 +1,9 @@
 import {
+  createWorkspace,
   extractConnectUrl,
   resolveTemplateShorthand,
 } from './create-workspace';
+import { CnwError } from './utils/error-utils';
 
 describe('extractConnectUrl', () => {
   test('should extract the correct URL from the given string', () => {
@@ -90,5 +92,25 @@ describe('resolveTemplateShorthand', () => {
     expect(resolveTemplateShorthand('nrwl/custom-template')).toBe(
       'nrwl/custom-template'
     );
+  });
+});
+
+describe('createWorkspace input validation', () => {
+  it('should throw MISSING_PRESET when neither preset nor template is provided', async () => {
+    await expect(
+      createWorkspace(undefined, { name: 'my-app' } as any)
+    ).rejects.toMatchObject({ code: 'MISSING_PRESET' });
+    await expect(
+      createWorkspace(undefined, { name: 'my-app' } as any)
+    ).rejects.toBeInstanceOf(CnwError);
+  });
+
+  it('should throw INVALID_TEMPLATE for a template outside the nrwl org', async () => {
+    await expect(
+      createWorkspace(undefined, {
+        name: 'my-app',
+        template: 'someone/their-template',
+      } as any)
+    ).rejects.toMatchObject({ code: 'INVALID_TEMPLATE' });
   });
 });

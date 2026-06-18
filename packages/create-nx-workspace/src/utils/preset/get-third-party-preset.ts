@@ -1,4 +1,5 @@
 import { validateNpmPackage } from '../validate-npm-package';
+import { CnwError } from '../error-utils';
 import { isKnownPreset } from './preset';
 
 /**
@@ -22,7 +23,8 @@ export function getPackageNameFromThirdPartyPreset(
 
   const validateResult = validateNpmPackage(packageName);
   if (!validateResult.validForNewPackages) {
-    throw new Error(
+    throw new CnwError(
+      'INVALID_PRESET',
       `Invalid preset npm package ${packageName}. There was an error with the preset npm package you provided: ` +
         (validateResult.errors ?? []).join('\n')
     );
