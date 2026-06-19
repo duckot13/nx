@@ -108,7 +108,7 @@ export const templates: Template[] = [
     ],
     gettingStarted: [
       { label: 'Add your first app', code: 'npx nx g @nx/react:app apps/web' },
-      { label: 'Add a library', code: 'npx nx g @nx/js:lib libs/util' },
+      { label: 'Add a library', code: 'npx nx g @nx/js:lib packages/util' },
       graphStep,
     ],
   },
@@ -195,7 +195,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/web - TanStack Start app with a streaming chat UI',
-      'libs/ai - shared TanStack AI tool definitions and types',
+      'packages/ai - shared TanStack AI tool definitions and types',
       'A server route that streams chat over Server-Sent Events',
     ],
     gettingStarted: [
@@ -249,8 +249,8 @@ export const templates: Template[] = [
     whatsInside: [
       'apps/shop - React e-commerce app (Vite)',
       'apps/api - Express backend serving product data',
-      'libs/shop/* - feature, data-access, and UI libraries',
-      'libs/shared/* - shared models and test utilities',
+      'packages/shop/* - feature, data-access, and UI libraries',
+      'packages/shared/* - shared models and test utilities',
       'apps/shop-e2e - Playwright end-to-end tests',
     ],
     gettingStarted: [
@@ -304,7 +304,7 @@ export const templates: Template[] = [
     whatsInside: [
       'apps/shop - Angular application (standalone APIs)',
       'apps/api - Express backend',
-      'libs/* - feature, data-access, and UI libraries with tags',
+      'packages/* - feature, data-access, and UI libraries with tags',
       'apps/shop-e2e - Playwright end-to-end tests',
     ],
     gettingStarted: [
@@ -410,7 +410,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/web - Next.js App Router application',
-      'libs/ui - shared React component library',
+      'packages/ui - shared React component library',
       'apps/web-e2e - Playwright end-to-end tests',
     ],
     gettingStarted: [
@@ -466,7 +466,7 @@ export const templates: Template[] = [
     whatsInside: [
       'apps/shell - host application',
       'apps/shop, apps/cart - federated remotes',
-      'libs/ui - shared design system used across the host and remotes',
+      'packages/ui - shared design system used across the host and remotes',
     ],
     gettingStarted: [
       { label: 'Serve the host (consumer)', code: 'npx nx run shell:dev' },
@@ -557,7 +557,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/api - NestJS REST API with sample resources',
-      'libs/types - shared DTO + type library',
+      'packages/types - shared DTO + type library',
       'A Dockerfile for the API',
     ],
     gettingStarted: [
@@ -605,7 +605,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/api - Express API with health + sample routes',
-      'libs/util - shared utility library',
+      'packages/util - shared utility library',
       'A Dockerfile for the API',
     ],
     gettingStarted: [
@@ -661,7 +661,7 @@ export const templates: Template[] = [
     whatsInside: [
       'apps/web - Next.js front end',
       'apps/api - NestJS REST API',
-      'libs/types - shared DTOs consumed by both apps',
+      'packages/types - shared DTOs consumed by both apps',
     ],
     gettingStarted: [
       {
@@ -712,7 +712,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/video - Remotion project with example compositions',
-      'libs/animations - reusable animation components and easings',
+      'packages/animations - reusable animation components and easings',
       'Nx targets for studio + render',
     ],
     gettingStarted: [
@@ -755,7 +755,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/web - Nuxt 4 application',
-      'libs/ui - shared Vue component library',
+      'packages/ui - shared Vue component library',
     ],
     gettingStarted: [
       {
@@ -809,7 +809,7 @@ export const templates: Template[] = [
     ],
     whatsInside: [
       'apps/mobile - Expo / React Native application',
-      'libs/ui - shared component library',
+      'packages/ui - shared component library',
     ],
     gettingStarted: [
       { label: 'Start Expo', code: 'npx nx run mobile:start' },
