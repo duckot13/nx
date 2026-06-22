@@ -6,9 +6,9 @@ import { templates, categories } from '../../data/templates';
 
 <StarlightPage
   frontmatter={{
-    title: 'Templates',
+    title: 'Starter templates',
     description:
-      'Jumpstart your monorepo with a pre-built Nx workspace. Pick a template, run one command, and start shipping with caching, affected builds, and CI baked in.',
+      'Jumpstart your monorepo with a pre-built Nx workspace. Pick a template, run one command, and start shipping with caching and CI baked in.',
     template: 'splash',
     tableOfContents: false,
     pagefind: true,
@@ -16,10 +16,8 @@ import { templates, categories } from '../../data/templates';
 >
   <div class="tpl-page">
     <p class="tpl-hero">
-      Pre-configured Nx monorepos for any stack. Run one command to scaffold a
-      monorepo with caching, affected commands, and CI already set up.
+      Pre-configured Nx monorepos for any stack. Run one command to scaffold a monorepo with caching and CI already set up.
     </p>
-
     <TemplateGallery client:load templates={templates} categories={categories} />
   </div>
 </StarlightPage>
