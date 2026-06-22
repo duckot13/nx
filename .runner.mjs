@@ -8,7 +8,12 @@ try {
     stdio: 'pipe',
     encoding: 'utf8',
     maxBuffer: 1024 * 1024 * 64,
-    env: { ...process.env, NX_NO_CLOUD: 'true', NX_DAEMON: 'false', CI: 'true' },
+    env: {
+      ...process.env,
+      NX_NO_CLOUD: 'true',
+      NX_DAEMON: 'false',
+      CI: 'true',
+    },
   });
   process.stdout.write(out);
 } catch (e) {
